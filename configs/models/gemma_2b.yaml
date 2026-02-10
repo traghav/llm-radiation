@@ -1,0 +1,6 @@
+model_id: "google/gemma-2b"
+model_name: "Gemma-2B"
+revision: "main"
+dtype: "float16"
+device_map: "auto"
+trust_remote_code: false

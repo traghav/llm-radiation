@@ -1,0 +1,6 @@
+model_id: "mistralai/Mistral-7B-v0.3"
+model_name: "Mistral-7B-v0.3"
+revision: "main"
+dtype: "float16"
+device_map: "auto"
+trust_remote_code: false

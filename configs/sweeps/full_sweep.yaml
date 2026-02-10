@@ -1,0 +1,97 @@
+name: "full_sweep_tinyllama"
+
+model:
+  model_id: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+  model_name: "TinyLlama-1.1B-Chat"
+  revision: "main"
+  dtype: "float16"
+  device_map: "auto"
+  trust_remote_code: false
+
+bitflip:
+  rates:
+    - 1.0e-08
+    - 1.5488166189124813e-08
+    - 2.398832919019494e-08
+    - 3.7153522909144846e-08
+    - 5.754399373371566e-08
+    - 8.912509381337456e-08
+    - 1.3803842646028852e-07
+    - 2.1379620895022326e-07
+    - 3.3113112148259111e-07
+    - 5.128613839913648e-07
+    - 7.943282347242822e-07
+    - 1.2302687708123814e-06
+    - 1.905460717963211e-06
+    - 2.9512092266663655e-06
+    - 4.5708818961487546e-06
+    - 7.079457843841379e-06
+    - 1.0964781961431851e-05
+    - 1.6982436524617442e-05
+    - 2.6302679918953817e-05
+    - 4.0738027780411276e-05
+    - 6.3095734448019336e-05
+    - 9.770099572992257e-05
+    - 0.00015135612484362088
+    - 0.00023442288153199225
+    - 0.0003630780547701013
+    - 0.0005623413251903491
+    - 0.0008709635899560807
+    - 0.001348962882591171
+    - 0.0020892961308540387
+    - 0.003236936090832139
+    - 0.005011872336272722
+    - 0.007762471166286913
+    - 0.012022644346174132
+  trials_per_rate: 3
+  seed_base: 42
+
+benchmarks:
+  - name: "mmlu"
+    tasks:
+      - "mmlu"
+    num_fewshot: 5
+    batch_size: "auto"
+  - name: "hellaswag"
+    tasks:
+      - "hellaswag"
+    num_fewshot: 10
+    batch_size: "auto"
+  - name: "arc_challenge"
+    tasks:
+      - "arc_challenge"
+    num_fewshot: 25
+    batch_size: "auto"
+  - name: "truthfulqa"
+    tasks:
+      - "truthfulqa_mc2"
+    num_fewshot: 0
+    batch_size: "auto"
+  - name: "winogrande"
+    tasks:
+      - "winogrande"
+    num_fewshot: 5
+    batch_size: "auto"
+  - name: "gsm8k"
+    tasks:
+      - "gsm8k"
+    num_fewshot: 5
+    batch_size: "auto"
+
+wandb:
+  project: "llm-radiation"
+  enabled: true
+  tags:
+    - "full_sweep"
+    - "tinyllama"
+    - "adaptive"
+
+adaptive:
+  enabled: true
+  initial_points: 25
+  min_rate: 1.0e-08
+  max_rate: 0.01
+  gradient_threshold_multiplier: 2.0
+  max_recursion: 4
+
+output_dir: "results"

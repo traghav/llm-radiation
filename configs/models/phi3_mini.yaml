@@ -1,0 +1,6 @@
+model_id: "microsoft/Phi-3-mini-4k-instruct"
+model_name: "Phi-3-mini-4k"
+revision: "main"
+dtype: "float16"
+device_map: "auto"
+trust_remote_code: true

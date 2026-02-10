@@ -1,0 +1,35 @@
+- name: "mmlu"
+  tasks:
+    - "mmlu"
+  num_fewshot: 5
+  batch_size: "auto"
+
+- name: "hellaswag"
+  tasks:
+    - "hellaswag"
+  num_fewshot: 10
+  batch_size: "auto"
+
+- name: "arc_challenge"
+  tasks:
+    - "arc_challenge"
+  num_fewshot: 25
+  batch_size: "auto"
+
+- name: "truthfulqa"
+  tasks:
+    - "truthfulqa_mc2"
+  num_fewshot: 0
+  batch_size: "auto"
+
+- name: "winogrande"
+  tasks:
+    - "winogrande"
+  num_fewshot: 5
+  batch_size: "auto"
+
+- name: "gsm8k"
+  tasks:
+    - "gsm8k"
+  num_fewshot: 5
+  batch_size: "auto"

@@ -1,0 +1,13 @@
+- name: "hellaswag"
+  tasks:
+    - "hellaswag"
+  num_fewshot: 10
+  limit: 200
+  batch_size: "auto"
+
+- name: "mmlu"
+  tasks:
+    - "mmlu"
+  num_fewshot: 5
+  limit: 200
+  batch_size: "auto"
