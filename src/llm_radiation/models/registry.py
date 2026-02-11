@@ -71,8 +71,9 @@ def load_model(
         }
 
         if quantization == "gptq":
-            from transformers import GPTQConfig
-            kwargs["quantization_config"] = GPTQConfig(bits=4, use_exllama=False)
+            # Pre-quantized GPTQ models embed their config; just set torch_dtype
+            # for the non-quantized layers (scales, embeddings, lm_head)
+            kwargs["torch_dtype"] = torch_dtype
             logger.info(f"Loading GPTQ 4-bit model: {resolved_id}")
         else:
             kwargs["torch_dtype"] = torch_dtype
