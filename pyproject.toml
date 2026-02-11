@@ -2,7 +2,7 @@
 name = "llm-radiation"
 version = "0.1.0"
 description = "Studying LLM degradation under simulated radiation (random bit flips in model weights)"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "torch>=2.2",
     "transformers>=4.40",
@@ -42,7 +42,7 @@ packages = ["src/llm_radiation"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W"]
@@ -52,6 +52,6 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
