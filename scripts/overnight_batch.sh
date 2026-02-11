@@ -1,6 +1,6 @@
 #!/bin/bash
 # Overnight batch runner - chains experiments sequentially
-# Estimated total: ~12-14 hours on GH200
+# Estimated total: ~20-24 hours on GH200
 #
 # Already running (will finish on their own):
 #   - smoke_test_v2 (TinyLlama FP16) ~2h
@@ -8,9 +8,14 @@
 #   - gemma_2b_sweep ~2.5h
 #
 # This script runs AFTER those finish:
-#   1. Gemma-7B FP16 (~5h)
-#   2. Mistral-7B FP16 (~5h)
-#   3. Phi-3-mini FP16 (~2.5h)
+#   FP16 models:
+#     1. Gemma-7B FP16 (~5h)
+#     2. Mistral-7B FP16 (~5h)
+#     3. Phi-3-mini FP16 (~2.5h)
+#   GPTQ 4-bit models (faster, smaller):
+#     4. GPTQ Gemma-2B (~1.5h)
+#     5. GPTQ Gemma-7B (~3h)
+#     6. GPTQ Mistral-7B (~3h)
 
 set -e
 
@@ -62,14 +67,27 @@ while pgrep -f "gptq_tinyllama_sweep|gemma_2b_sweep" > /dev/null 2>&1; do
 done
 log "Previous experiments finished, starting overnight batch"
 
-# 1. Gemma-7B (~5h)
+# --- FP16 models ---
+
+# 1. Gemma-7B FP16 (~5h)
 run_experiment configs/sweeps/gemma_7b_sweep.yaml gemma_7b_sweep
 
-# 2. Mistral-7B (~5h)
+# 2. Mistral-7B FP16 (~5h)
 run_experiment configs/sweeps/mistral_7b_sweep.yaml mistral_7b_sweep
 
-# 3. Phi-3-mini (~2.5h)
+# 3. Phi-3-mini FP16 (~2.5h)
 run_experiment configs/sweeps/phi3_mini_sweep.yaml phi3_mini_sweep
+
+# --- GPTQ 4-bit models ---
+
+# 4. GPTQ Gemma-2B (~1.5h)
+run_experiment configs/sweeps/gptq_gemma_2b_sweep.yaml gptq_gemma_2b_sweep
+
+# 5. GPTQ Gemma-7B (~3h)
+run_experiment configs/sweeps/gptq_gemma_7b_sweep.yaml gptq_gemma_7b_sweep
+
+# 6. GPTQ Mistral-7B (~3h)
+run_experiment configs/sweeps/gptq_mistral_7b_sweep.yaml gptq_mistral_7b_sweep
 
 log "=========================================="
 log "ALL EXPERIMENTS COMPLETE"

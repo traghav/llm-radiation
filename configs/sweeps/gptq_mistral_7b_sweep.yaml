@@ -1,0 +1,59 @@
+name: "gptq_mistral_7b_sweep"
+
+model:
+  model_id: "TheBloke/Mistral-7B-v0.1-GPTQ"
+  model_name: "Mistral-7B-v0.1-GPTQ-4bit"
+  revision: "main"
+  dtype: "float16"
+  device_map: "auto"
+  trust_remote_code: false
+  quantization: "gptq"
+  gptq_flip_targets:
+    - "qweight"
+
+bitflip:
+  rates:
+    - 1.0e-10
+    - 3.0e-10
+    - 1.0e-09
+    - 3.0e-09
+    - 1.0e-08
+    - 2.0e-08
+    - 3.0e-08
+    - 5.0e-08
+    - 7.0e-08
+    - 1.0e-07
+    - 1.0e-06
+    - 1.0e-05
+    - 1.0e-04
+    - 1.0e-03
+  trials_per_rate: 3
+  seed_base: 42
+
+benchmarks:
+  - name: "hellaswag"
+    tasks:
+      - "hellaswag"
+    num_fewshot: 10
+    limit: 200
+    batch_size: "auto"
+  - name: "mmlu"
+    tasks:
+      - "mmlu"
+    num_fewshot: 5
+    limit: 200
+    batch_size: "auto"
+
+wandb:
+  project: "llm-radiation"
+  enabled: true
+  tags:
+    - "gptq"
+    - "mistral-7b"
+    - "4bit"
+    - "cliff_investigation"
+
+adaptive:
+  enabled: false
+
+output_dir: "results/gptq_mistral_7b_sweep"
