@@ -8,6 +8,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 
 import numpy as np
+import torch
 
 
 @dataclass
@@ -64,5 +65,9 @@ class FlipManifest:
         for name in sorted(state_dict.keys()):
             t = state_dict[name]
             h.update(name.encode())
-            h.update(t.cpu().numpy().tobytes())
+            t_cpu = t.cpu()
+            # Convert bfloat16 to float32 for numpy compat
+            if t_cpu.dtype == torch.bfloat16:
+                t_cpu = t_cpu.float()
+            h.update(t_cpu.numpy().tobytes())
         return h.hexdigest()[:16]
