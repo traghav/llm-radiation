@@ -8,7 +8,7 @@ from pathlib import Path
 
 import torch
 
-from llm_radiation.bitflip.engine import BitFlipEngine
+from llm_radiation.bitflip.engine import BitFlipEngine, HealthReport
 from llm_radiation.bitflip.manifest import FlipManifest
 from llm_radiation.benchmarks.harness import BenchmarkRunner
 from llm_radiation.experiments.config import ExperimentConfig
@@ -26,8 +26,18 @@ class ExperimentRunner:
         self.tracker: WandbTracker | None = None
         self.results: list[dict] = []
 
+    @property
+    def _quantization(self) -> str:
+        return self.config.model.quantization
+
+    @property
+    def _gptq_flip_targets(self) -> list[str]:
+        return self.config.model.gptq_flip_targets
+
     def run(self) -> list[dict]:
         """Execute the full experiment sweep."""
+        quantization = self._quantization
+
         # Initialize tracking
         if self.config.wandb.enabled:
             self.tracker = WandbTracker(self.config.wandb)
@@ -41,11 +51,16 @@ class ExperimentRunner:
             device_map=self.config.model.device_map,
             revision=self.config.model.revision,
             trust_remote_code=self.config.model.trust_remote_code,
+            quantization=quantization,
         )
 
         # Snapshot clean weights
         logger.info("Snapshotting clean weights to CPU...")
-        clean_snapshot = snapshot_weights(model)
+        clean_snapshot = snapshot_weights(
+            model,
+            quantization=quantization,
+            gptq_flip_targets=self._gptq_flip_targets,
+        )
         model_hash = FlipManifest.compute_model_hash(clean_snapshot)
 
         # Setup benchmark runner
@@ -56,6 +71,9 @@ class ExperimentRunner:
 
         # Run baseline (0 flips)
         logger.info("Running baseline evaluation (no bit flips)...")
+        baseline_health = BitFlipEngine.check_health(
+            model, tokenizer, quantization=quantization
+        )
         baseline_results = bench_runner.run_all(model, tokenizer)
         baseline_record = {
             "flip_rate": 0.0,
@@ -63,6 +81,7 @@ class ExperimentRunner:
             "seed": 0,
             "num_flips": 0,
             "results": baseline_results,
+            "health": baseline_health.to_dict(),
             "timestamp": time.time(),
         }
         self.results.append(baseline_record)
@@ -84,7 +103,7 @@ class ExperimentRunner:
                 logger.info(f"Flip rate={rate:.2e}, trial={trial}, seed={seed}")
 
                 # Restore clean weights
-                restore_weights(model, clean_snapshot)
+                restore_weights(model, clean_snapshot, quantization=quantization)
 
                 # Apply bit flips
                 manifest = engine.apply_flips(
@@ -93,7 +112,26 @@ class ExperimentRunner:
                     model_id=self.config.model.model_id,
                     model_hash=model_hash,
                     seed=seed,
+                    quantization=quantization,
+                    gptq_flip_targets=self._gptq_flip_targets,
                 )
+
+                # Health check after flips
+                health = BitFlipEngine.check_health(
+                    model, tokenizer, quantization=quantization
+                )
+                logger.info(
+                    f"  Health: weights_ok={health.weights_healthy}, "
+                    f"logits_ok={health.logits_healthy}, "
+                    f"NaN={health.nan_count}, Inf={health.inf_count}, "
+                    f"logit_range=[{health.logits_min:.1f}, {health.logits_max:.1f}]"
+                )
+
+                if health.numerically_broken:
+                    logger.warning(
+                        f"  Model numerically broken at rate={rate:.2e} "
+                        f"(NaN logits). Benchmarks will reflect random chance."
+                    )
 
                 # Benchmark
                 trial_results = bench_runner.run_all(model, tokenizer)
@@ -104,6 +142,7 @@ class ExperimentRunner:
                     "seed": seed,
                     "num_flips": manifest.num_flips,
                     "results": trial_results,
+                    "health": health.to_dict(),
                     "timestamp": time.time(),
                 }
                 self.results.append(record)
@@ -124,17 +163,26 @@ class ExperimentRunner:
                 for rate in new_rates:
                     for trial in range(self.config.bitflip.trials_per_rate):
                         seed = self.config.bitflip.seed_base + hash((rate, trial)) % (2**31)
-                        restore_weights(model, clean_snapshot)
+                        restore_weights(
+                            model, clean_snapshot, quantization=quantization
+                        )
                         manifest = engine.apply_flips(
                             model, flip_rate=rate,
                             model_id=self.config.model.model_id,
                             model_hash=model_hash, seed=seed,
+                            quantization=quantization,
+                            gptq_flip_targets=self._gptq_flip_targets,
+                        )
+                        health = BitFlipEngine.check_health(
+                            model, tokenizer, quantization=quantization
                         )
                         trial_results = bench_runner.run_all(model, tokenizer)
                         record = {
                             "flip_rate": rate, "trial": trial, "seed": seed,
                             "num_flips": manifest.num_flips,
-                            "results": trial_results, "timestamp": time.time(),
+                            "results": trial_results,
+                            "health": health.to_dict(),
+                            "timestamp": time.time(),
                         }
                         self.results.append(record)
                         if self.tracker:

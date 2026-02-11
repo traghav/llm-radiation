@@ -1,0 +1,61 @@
+name: "gptq_tinyllama_sweep"
+
+model:
+  model_id: "TheBloke/TinyLlama-1.1B-Chat-v1.0-GPTQ"
+  model_name: "TinyLlama-1.1B-Chat-GPTQ-4bit"
+  revision: "main"
+  dtype: "float16"
+  device_map: "auto"
+  trust_remote_code: false
+  quantization: "gptq"
+  gptq_flip_targets:
+    - "qweight"
+
+bitflip:
+  rates:
+    # Fine resolution around the cliff (1e-10 to 1e-7)
+    - 1.0e-10
+    - 3.0e-10
+    - 1.0e-09
+    - 3.0e-09
+    - 1.0e-08
+    - 2.0e-08
+    - 3.0e-08
+    - 5.0e-08
+    - 7.0e-08
+    - 1.0e-07
+    # Coarser above the cliff to confirm total breakdown
+    - 1.0e-06
+    - 1.0e-05
+    - 1.0e-04
+    - 1.0e-03
+  trials_per_rate: 3
+  seed_base: 42
+
+benchmarks:
+  - name: "hellaswag"
+    tasks:
+      - "hellaswag"
+    num_fewshot: 10
+    limit: 200
+    batch_size: "auto"
+  - name: "mmlu"
+    tasks:
+      - "mmlu"
+    num_fewshot: 5
+    limit: 200
+    batch_size: "auto"
+
+wandb:
+  project: "llm-radiation"
+  enabled: true
+  tags:
+    - "gptq"
+    - "tinyllama"
+    - "4bit"
+    - "cliff_investigation"
+
+adaptive:
+  enabled: false
+
+output_dir: "results/gptq_tinyllama_sweep"

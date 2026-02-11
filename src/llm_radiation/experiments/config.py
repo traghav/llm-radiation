@@ -23,6 +23,13 @@ class ModelConfig(BaseModel):
     trust_remote_code: bool = Field(
         default=False, description="Allow execution of remote code"
     )
+    quantization: str = Field(
+        default="none", description="Quantization method: 'none' or 'gptq'"
+    )
+    gptq_flip_targets: list[str] = Field(
+        default_factory=lambda: ["qweight"],
+        description="Which GPTQ tensors to target for bit flips",
+    )
 
 
 class BitFlipConfig(BaseModel):

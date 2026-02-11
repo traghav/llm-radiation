@@ -23,6 +23,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+gptq = [
+    "auto-gptq>=0.7",
+    "optimum>=1.17",
+]
 dev = [
     "pytest>=8.0",
     "ruff>=0.3",
