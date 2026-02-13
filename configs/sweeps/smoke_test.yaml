@@ -1,0 +1,42 @@
+name: "smoke_test_tinyllama"
+
+model:
+  model_id: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+  model_name: "TinyLlama-1.1B-Chat"
+  revision: "main"
+  dtype: "float16"
+  device_map: "auto"
+  trust_remote_code: false
+
+bitflip:
+  rates:
+    - 1.0e-07
+    - 1.0e-05
+    - 1.0e-03
+    - 5.0e-03
+    - 1.0e-02
+  trials_per_rate: 1
+  seed_base: 42
+
+benchmarks:
+  - name: "hellaswag"
+    tasks:
+      - "hellaswag"
+    num_fewshot: 10
+    limit: 200
+    batch_size: "auto"
+  - name: "mmlu"
+    tasks:
+      - "mmlu"
+    num_fewshot: 5
+    limit: 200
+    batch_size: "auto"
+
+wandb:
+  project: "llm-radiation"
+  enabled: false
+
+adaptive:
+  enabled: false
+
+output_dir: "results/smoke_test"

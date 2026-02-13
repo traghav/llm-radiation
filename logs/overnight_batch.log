@@ -1,0 +1,53 @@
+[2026-02-11 18:54:25] Overnight batch started
+[2026-02-11 18:54:25] Waiting for current experiments to finish...
+[2026-02-11 23:05:28] Previous experiments finished, starting overnight batch
+[2026-02-11 23:05:28] ==========================================
+[2026-02-11 23:05:28] STARTING: gemma_7b_sweep
+[2026-02-11 23:05:28] Config: configs/sweeps/gemma_7b_sweep.yaml
+[2026-02-11 23:05:28] Log: logs/gemma_7b_sweep.log
+[2026-02-11 23:05:28] ==========================================
+[2026-02-12 05:19:25] COMPLETED: gemma_7b_sweep
+[2026-02-12 05:19:25] 
+[2026-02-12 05:19:25] ==========================================
+[2026-02-12 05:19:25] STARTING: mistral_7b_sweep
+[2026-02-12 05:19:25] Config: configs/sweeps/mistral_7b_sweep.yaml
+[2026-02-12 05:19:25] Log: logs/mistral_7b_sweep.log
+[2026-02-12 05:19:25] ==========================================
+[2026-02-12 10:33:32] COMPLETED: mistral_7b_sweep
+[2026-02-12 10:33:32] 
+[2026-02-12 10:33:32] ==========================================
+[2026-02-12 10:33:32] STARTING: phi3_mini_sweep
+[2026-02-12 10:33:32] Config: configs/sweeps/phi3_mini_sweep.yaml
+[2026-02-12 10:33:32] Log: logs/phi3_mini_sweep.log
+[2026-02-12 10:33:32] ==========================================
+[2026-02-12 10:33:40] FAILED: phi3_mini_sweep (exit code 1)
+[2026-02-12 10:33:40] Check logs/phi3_mini_sweep.log for details
+[2026-02-12 10:33:40] 
+[2026-02-12 10:33:40] ==========================================
+[2026-02-12 10:33:40] STARTING: gptq_gemma_2b_sweep
+[2026-02-12 10:33:40] Config: configs/sweeps/gptq_gemma_2b_sweep.yaml
+[2026-02-12 10:33:40] Log: logs/gptq_gemma_2b_sweep.log
+[2026-02-12 10:33:40] ==========================================
+[2026-02-12 10:33:45] FAILED: gptq_gemma_2b_sweep (exit code 1)
+[2026-02-12 10:33:45] Check logs/gptq_gemma_2b_sweep.log for details
+[2026-02-12 10:33:45] 
+[2026-02-12 10:33:46] ==========================================
+[2026-02-12 10:33:46] STARTING: gptq_gemma_7b_sweep
+[2026-02-12 10:33:46] Config: configs/sweeps/gptq_gemma_7b_sweep.yaml
+[2026-02-12 10:33:46] Log: logs/gptq_gemma_7b_sweep.log
+[2026-02-12 10:33:46] ==========================================
+[2026-02-12 10:33:51] FAILED: gptq_gemma_7b_sweep (exit code 1)
+[2026-02-12 10:33:51] Check logs/gptq_gemma_7b_sweep.log for details
+[2026-02-12 10:33:51] 
+[2026-02-12 10:33:51] ==========================================
+[2026-02-12 10:33:51] STARTING: gptq_mistral_7b_sweep
+[2026-02-12 10:33:51] Config: configs/sweeps/gptq_mistral_7b_sweep.yaml
+[2026-02-12 10:33:51] Log: logs/gptq_mistral_7b_sweep.log
+[2026-02-12 10:33:51] ==========================================
+[2026-02-12 15:45:43] COMPLETED: gptq_mistral_7b_sweep
+[2026-02-12 15:45:43] 
+[2026-02-12 15:45:43] ==========================================
+[2026-02-12 15:45:43] ALL EXPERIMENTS COMPLETE
+[2026-02-12 15:45:43] ==========================================
+[2026-02-12 15:45:43] Results saved in results/ directory
+[2026-02-12 15:45:43] W&B dashboard: https://wandb.ai/llm-radiation
